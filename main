@@ -3,6 +3,7 @@ local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local CoreGui = game:GetService("CoreGui")
+local Lighting = game:GetService("Lighting")
 
 local p = Players.LocalPlayer
 local cam = workspace.CurrentCamera
@@ -45,17 +46,15 @@ UserInputService.InputChanged:Connect(function(i)
 end)
 
 local mf = Instance.new("Frame")
-mf.Size = UDim2.new(0, 260, 0, 330)
-mf.Position = UDim2.new(0.5, -130, 0.5, -165)
+mf.Size = UDim2.new(0, 260, 0, 360)
+mf.Position = UDim2.new(0.5, -130, 0.5, -180)
 mf.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 mf.Visible = false
 mf.Parent = sg
 Instance.new("UICorner", mf).CornerRadius = UDim.new(0, 12)
 Instance.new("UIStroke", mf).Color = Color3.fromRGB(50, 50, 60)
 
-fb.MouseButton1Click:Connect(function() 
-    mf.Visible = not mf.Visible 
-end)
+fb.MouseButton1Click:Connect(function() mf.Visible = not mf.Visible end)
 
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0, 40)
@@ -77,7 +76,6 @@ scroll.Parent = mf
 local layout = Instance.new("UIListLayout")
 layout.Padding = UDim.new(0, 10)
 layout.Parent = scroll
-
 local padding = Instance.new("UIPadding", scroll)
 padding.PaddingLeft = UDim.new(0, 15)
 padding.PaddingRight = UDim.new(0, 15)
@@ -126,164 +124,17 @@ local function createToggle(name, callback)
         state = not state
         TweenService:Create(knob, TweenInfo.new(0.25, Enum.EasingStyle.Quad), {Position = state and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)}):Play()
         TweenService:Create(bg, TweenInfo.new(0.25, Enum.EasingStyle.Quad), {BackgroundColor3 = state and Color3.fromRGB(0, 170, 255) or Color3.fromRGB(60, 60, 65)}):Play()
-        TweenService:Create(lbl, TweenInfo.new(0.25), {TextColor3 = state and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(220, 220, 220)}):Play()
         callback(state)
     end)
 end
 
-local function createInput(name, default, callback)
-    local container = Instance.new("Frame")
-    container.Size = UDim2.new(1, 0, 0, 36)
-    container.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
-    container.Parent = scroll
-    Instance.new("UICorner", container).CornerRadius = UDim.new(0, 8)
-    
-    local lbl = Instance.new("TextLabel")
-    lbl.Size = UDim2.new(0, 120, 1, 0)
-    lbl.Position = UDim2.new(0, 10, 0, 0)
-    lbl.BackgroundTransparency = 1
-    lbl.Text = name
-    lbl.TextColor3 = Color3.fromRGB(220, 220, 220)
-    lbl.Font = Enum.Font.GothamMedium
-    lbl.TextSize = 13
-    lbl.TextXAlignment = Enum.TextXAlignment.Left
-    lbl.Parent = container
-    
-    local box = Instance.new("TextBox")
-    box.Size = UDim2.new(0, 50, 0, 24)
-    box.Position = UDim2.new(1, -60, 0.5, -12)
-    box.BackgroundColor3 = Color3.fromRGB(50, 50, 55)
-    box.TextColor3 = Color3.fromRGB(0, 170, 255)
-    box.Text = tostring(default)
-    box.Font = Enum.Font.GothamBold
-    box.TextSize = 13
-    box.Parent = container
-    Instance.new("UICorner", box).CornerRadius = UDim.new(0, 4)
-    
-    box.FocusLost:Connect(function() callback(box.Text) end)
-end
-
-local flying = false
-local flySpeed = 150
-local flyBodyV, flyBodyG
-
-createToggle("Fly Mode", function(state)
-    flying = state
-    local char = p.Character
-    if not char or not char:FindFirstChild("HumanoidRootPart") or not char:FindFirstChild("Humanoid") then return end
-    
-    local hrp = char.HumanoidRootPart
-    local hum = char.Humanoid
-    
-    if flying then
-        hum.PlatformStand = true
-        flyBodyV = Instance.new("BodyVelocity")
-        flyBodyV.Velocity = Vector3.new(0, 0, 0)
-        flyBodyV.MaxForce = Vector3.new(9e9, 9e9, 9e9)
-        flyBodyV.Parent = hrp
-        
-        flyBodyG = Instance.new("BodyGyro")
-        flyBodyG.P = 9e4
-        flyBodyG.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
-        flyBodyG.CFrame = hrp.CFrame
-        flyBodyG.Parent = hrp
-        
-        coroutine.wrap(function()
-            while flying and p.Character and p.Character:FindFirstChild("HumanoidRootPart") do
-                local md = Vector3.new(0, 0, 0)
-                if UserInputService:IsKeyDown(Enum.KeyCode.W) then md = md + cam.CFrame.LookVector end
-                if UserInputService:IsKeyDown(Enum.KeyCode.S) then md = md - cam.CFrame.LookVector end
-                if UserInputService:IsKeyDown(Enum.KeyCode.A) then md = md - cam.CFrame.RightVector end
-                if UserInputService:IsKeyDown(Enum.KeyCode.D) then md = md + cam.CFrame.RightVector end
-                if UserInputService:IsKeyDown(Enum.KeyCode.Space) then md = md + Vector3.new(0, 1, 0) end
-                if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then md = md - Vector3.new(0, 1, 0) end
-                
-                if md.Magnitude > 0 then
-                    flyBodyV.Velocity = md.Unit * flySpeed
-                else
-                    flyBodyV.Velocity = Vector3.new(0, 0, 0)
-                end
-                
-                flyBodyG.CFrame = cam.CFrame
-                RunService.RenderStepped:Wait()
-            end
-            if flyBodyV then flyBodyV:Destroy() end
-            if flyBodyG then flyBodyG:Destroy() end
-            if p.Character and p.Character:FindFirstChild("Humanoid") then
-                p.Character.Humanoid.PlatformStand = false
-            end
-        end)()
+-- Logic Brightness
+createToggle("Full Bright", function(state)
+    if state then
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/MinhLuaStudio/code_hack/refs/heads/main/brightness"))()
     else
-        if flyBodyV then flyBodyV:Destroy() end
-        if flyBodyG then flyBodyG:Destroy() end
-        hum.PlatformStand = false
-    end
-end)
-
-local espEnabled = false
-RunService.RenderStepped:Connect(function()
-    for _, plr in pairs(Players:GetPlayers()) do
-        if plr ~= p and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-            local char = plr.Character
-            if espEnabled then
-                if not char:FindFirstChild("ESP_Highlight") then
-                    local hl = Instance.new("Highlight")
-                    hl.Name = "ESP_Highlight"
-                    hl.FillColor = Color3.fromRGB(0, 255, 255)
-                    hl.FillTransparency = 0.5
-                    hl.OutlineColor = Color3.fromRGB(255, 255, 255)
-                    hl.OutlineTransparency = 0.1
-                    hl.Parent = char
-                end
-                if not char.HumanoidRootPart:FindFirstChild("ESP_NameTag") then
-                    local bgui = Instance.new("BillboardGui")
-                    bgui.Name = "ESP_NameTag"
-                    bgui.AlwaysOnTop = true
-                    bgui.Size = UDim2.new(0, 100, 0, 30)
-                    bgui.ExtentsOffset = Vector3.new(0, 3, 0)
-                    bgui.Parent = char.HumanoidRootPart
-                    local txt = Instance.new("TextLabel")
-                    txt.Size = UDim2.new(1, 0, 1, 0)
-                    txt.BackgroundTransparency = 1
-                    txt.Text = plr.DisplayName or plr.Name
-                    txt.TextColor3 = Color3.fromRGB(0, 255, 255)
-                    txt.TextStrokeTransparency = 0
-                    txt.Font = Enum.Font.GothamBold
-                    txt.TextSize = 12
-                    txt.Parent = bgui
-                end
-            else
-                if char:FindFirstChild("ESP_Highlight") then char.ESP_Highlight:Destroy() end
-                if char.HumanoidRootPart:FindFirstChild("ESP_NameTag") then char.HumanoidRootPart.ESP_NameTag:Destroy() end
-            end
-        end
-    end
-end)
-createToggle("ESP Player", function(state) espEnabled = state end)
-
-local infJ = false
-UserInputService.JumpRequest:Connect(function()
-    if infJ and p.Character and p.Character:FindFirstChildOfClass("Humanoid") then
-        p.Character:FindFirstChildOfClass("Humanoid"):ChangeState(Enum.HumanoidStateType.Jumping)
-    end
-end)
-createToggle("Infinite Jump", function(state) infJ = state end)
-
-local noclip = false
-RunService.Stepped:Connect(function()
-    if noclip and p.Character then
-        for _, part in pairs(p.Character:GetDescendants()) do
-            if part:IsA("BasePart") then 
-                part.CanCollide = false 
-            end
-        end
-    end
-end)
-createToggle("Noclip", function(state) noclip = state end)
-
-createInput("WalkSpeed", 16, function(txt)
-    local num = tonumber(txt)
-    if num and p.Character and p.Character:FindFirstChildOfClass("Humanoid") then
-        p.Character:FindFirstChildOfClass("Humanoid").WalkSpeed = num
+        Lighting.Ambient = Color3.fromRGB(50, 50, 50)
+        Lighting.OutdoorAmbient = Color3.fromRGB(50, 50, 50)
+        Lighting.Brightness = 2
     end
 end)
