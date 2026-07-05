@@ -3,28 +3,29 @@ local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local CoreGui = game:GetService("CoreGui")
-local Lighting = game:GetService("Lighting")
 
 local p = Players.LocalPlayer
 local cam = workspace.CurrentCamera
 
 local sg = Instance.new("ScreenGui")
-sg.Name = "ProHubUI"
+sg.Name = "ProHubUI_V2"
 sg.ResetOnSpawn = false
 local success, _ = pcall(function() sg.Parent = CoreGui end)
 if not success then sg.Parent = p:WaitForChild("PlayerGui") end
 
 local fb = Instance.new("TextButton")
-fb.Size = UDim2.new(0, 46, 0, 46)
-fb.Position = UDim2.new(0, 20, 0.5, -23)
-fb.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
-fb.Text = "M"
-fb.TextColor3 = Color3.fromRGB(255, 255, 255)
-fb.TextSize = 22
-fb.Font = Enum.Font.GothamBold
+fb.Size = UDim2.new(0, 50, 0, 50)
+fb.Position = UDim2.new(0, 15, 0.5, -25)
+fb.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+fb.Text = "P"
+fb.TextColor3 = Color3.fromRGB(0, 170, 255)
+fb.TextSize = 24
+fb.Font = Enum.Font.GothamBlack
 fb.Parent = sg
 Instance.new("UICorner", fb).CornerRadius = UDim.new(1, 0)
-Instance.new("UIStroke", fb).Color = Color3.fromRGB(50, 50, 60)
+local fbStroke = Instance.new("UIStroke", fb)
+fbStroke.Color = Color3.fromRGB(0, 170, 255)
+fbStroke.Thickness = 2
 
 local drag, dragStart, startPos
 fb.InputBegan:Connect(function(i)
@@ -41,40 +42,55 @@ end)
 UserInputService.InputChanged:Connect(function(i)
     if drag and (i.UserInputType == Enum.UserInputType.MouseMovement or i.UserInputType == Enum.UserInputType.Touch) then
         local delta = i.Position - dragStart
-        fb.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        TweenService:Create(fb, TweenInfo.new(0.1, Enum.EasingStyle.Sine), {Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)}):Play()
     end
 end)
 
 local mf = Instance.new("Frame")
-mf.Size = UDim2.new(0, 260, 0, 450)
-mf.Position = UDim2.new(0.5, -130, 0.5, -225)
-mf.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+mf.Size = UDim2.new(0, 300, 0, 480)
+mf.Position = UDim2.new(0.5, -150, 0.5, -240)
+mf.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
 mf.Visible = false
+mf.ClipsDescendants = true
 mf.Parent = sg
-Instance.new("UICorner", mf).CornerRadius = UDim.new(0, 12)
-Instance.new("UIStroke", mf).Color = Color3.fromRGB(50, 50, 60)
+Instance.new("UICorner", mf).CornerRadius = UDim.new(0, 10)
+local mfStroke = Instance.new("UIStroke", mf)
+mfStroke.Color = Color3.fromRGB(0, 170, 255)
+mfStroke.Thickness = 1.5
 
-fb.MouseButton1Click:Connect(function() mf.Visible = not mf.Visible end)
+fb.MouseButton1Click:Connect(function() 
+    mf.Visible = not mf.Visible 
+    if mf.Visible then
+        mf.Size = UDim2.new(0, 300, 0, 0)
+        TweenService:Create(mf, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 300, 0, 480)}):Play()
+    end
+end)
 
 local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, 0, 0, 40)
+title.Size = UDim2.new(1, 0, 0, 45)
 title.BackgroundTransparency = 1
-title.Text = "CONTROL MENU"
+title.Text = "CONTROL MENU V2"
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
-title.Font = Enum.Font.GothamBold
-title.TextSize = 16
+title.Font = Enum.Font.GothamBlack
+title.TextSize = 18
 title.Parent = mf
 
+local divider = Instance.new("Frame")
+divider.Size = UDim2.new(1, 0, 0, 1)
+divider.Position = UDim2.new(0, 0, 0, 45)
+divider.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+divider.Parent = mf
+
 local scroll = Instance.new("ScrollingFrame")
-scroll.Size = UDim2.new(1, 0, 1, -45)
-scroll.Position = UDim2.new(0, 0, 0, 40)
+scroll.Size = UDim2.new(1, 0, 1, -55)
+scroll.Position = UDim2.new(0, 0, 0, 50)
 scroll.BackgroundTransparency = 1
-scroll.ScrollBarThickness = 2
-scroll.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 110)
+scroll.ScrollBarThickness = 3
+scroll.ScrollBarImageColor3 = Color3.fromRGB(0, 170, 255)
 scroll.Parent = mf
 
 local layout = Instance.new("UIListLayout")
-layout.Padding = UDim.new(0, 10)
+layout.Padding = UDim.new(0, 8)
 layout.Parent = scroll
 local padding = Instance.new("UIPadding", scroll)
 padding.PaddingLeft = UDim.new(0, 15)
@@ -83,33 +99,33 @@ padding.PaddingTop = UDim.new(0, 5)
 
 local function createToggle(name, callback)
     local container = Instance.new("Frame")
-    container.Size = UDim2.new(1, 0, 0, 36)
-    container.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+    container.Size = UDim2.new(1, 0, 0, 40)
+    container.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
     container.Parent = scroll
-    Instance.new("UICorner", container).CornerRadius = UDim.new(0, 8)
+    Instance.new("UICorner", container).CornerRadius = UDim.new(0, 6)
     
     local lbl = Instance.new("TextLabel")
-    lbl.Size = UDim2.new(0, 150, 1, 0)
-    lbl.Position = UDim2.new(0, 10, 0, 0)
+    lbl.Size = UDim2.new(0, 180, 1, 0)
+    lbl.Position = UDim2.new(0, 15, 0, 0)
     lbl.BackgroundTransparency = 1
     lbl.Text = name
-    lbl.TextColor3 = Color3.fromRGB(220, 220, 220)
+    lbl.TextColor3 = Color3.fromRGB(240, 240, 240)
     lbl.Font = Enum.Font.GothamMedium
-    lbl.TextSize = 13
+    lbl.TextSize = 14
     lbl.TextXAlignment = Enum.TextXAlignment.Left
     lbl.Parent = container
     
     local bg = Instance.new("Frame")
-    bg.Size = UDim2.new(0, 40, 0, 20)
-    bg.Position = UDim2.new(1, -50, 0.5, -10)
-    bg.BackgroundColor3 = Color3.fromRGB(60, 60, 65)
+    bg.Size = UDim2.new(0, 44, 0, 22)
+    bg.Position = UDim2.new(1, -55, 0.5, -11)
+    bg.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
     bg.Parent = container
     Instance.new("UICorner", bg).CornerRadius = UDim.new(1, 0)
     
     local knob = Instance.new("Frame")
-    knob.Size = UDim2.new(0, 16, 0, 16)
-    knob.Position = UDim2.new(0, 2, 0.5, -8)
-    knob.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    knob.Size = UDim2.new(0, 18, 0, 18)
+    knob.Position = UDim2.new(0, 2, 0.5, -9)
+    knob.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
     knob.Parent = bg
     Instance.new("UICorner", knob).CornerRadius = UDim.new(1, 0)
     
@@ -122,40 +138,42 @@ local function createToggle(name, callback)
     local state = false
     btn.MouseButton1Click:Connect(function()
         state = not state
-        TweenService:Create(knob, TweenInfo.new(0.25, Enum.EasingStyle.Quad), {Position = state and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)}):Play()
-        TweenService:Create(bg, TweenInfo.new(0.25, Enum.EasingStyle.Quad), {BackgroundColor3 = state and Color3.fromRGB(0, 170, 255) or Color3.fromRGB(60, 60, 65)}):Play()
+        TweenService:Create(knob, TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = state and UDim2.new(1, -20, 0.5, -9) or UDim2.new(0, 2, 0.5, -9), BackgroundColor3 = state and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(200, 200, 200)}):Play()
+        TweenService:Create(bg, TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = state and Color3.fromRGB(0, 170, 255) or Color3.fromRGB(40, 40, 45)}):Play()
         callback(state)
     end)
 end
 
 local function createInput(name, default, callback)
     local container = Instance.new("Frame")
-    container.Size = UDim2.new(1, 0, 0, 36)
-    container.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+    container.Size = UDim2.new(1, 0, 0, 40)
+    container.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
     container.Parent = scroll
-    Instance.new("UICorner", container).CornerRadius = UDim.new(0, 8)
+    Instance.new("UICorner", container).CornerRadius = UDim.new(0, 6)
     
     local lbl = Instance.new("TextLabel")
-    lbl.Size = UDim2.new(0, 120, 1, 0)
-    lbl.Position = UDim2.new(0, 10, 0, 0)
+    lbl.Size = UDim2.new(0, 150, 1, 0)
+    lbl.Position = UDim2.new(0, 15, 0, 0)
     lbl.BackgroundTransparency = 1
     lbl.Text = name
-    lbl.TextColor3 = Color3.fromRGB(220, 220, 220)
+    lbl.TextColor3 = Color3.fromRGB(240, 240, 240)
     lbl.Font = Enum.Font.GothamMedium
-    lbl.TextSize = 13
+    lbl.TextSize = 14
     lbl.TextXAlignment = Enum.TextXAlignment.Left
     lbl.Parent = container
     
     local box = Instance.new("TextBox")
-    box.Size = UDim2.new(0, 50, 0, 24)
-    box.Position = UDim2.new(1, -60, 0.5, -12)
-    box.BackgroundColor3 = Color3.fromRGB(50, 50, 55)
+    box.Size = UDim2.new(0, 60, 0, 26)
+    box.Position = UDim2.new(1, -75, 0.5, -13)
+    box.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
     box.TextColor3 = Color3.fromRGB(0, 170, 255)
     box.Text = tostring(default)
     box.Font = Enum.Font.GothamBold
-    box.TextSize = 13
+    box.TextSize = 14
     box.Parent = container
     Instance.new("UICorner", box).CornerRadius = UDim.new(0, 4)
+    local boxStroke = Instance.new("UIStroke", box)
+    boxStroke.Color = Color3.fromRGB(40, 40, 50)
     
     box.FocusLost:Connect(function() callback(box.Text) end)
 end
@@ -169,29 +187,44 @@ createToggle("Fly Mode", function(state)
     flying = state
     local char = p.Character
     if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+    
+    local humanoid = char:FindFirstChildOfClass("Humanoid")
+    if not humanoid then return end
+
     if flying then
-        char.Humanoid.PlatformStand = true
+        humanoid.PlatformStand = true
         flyBodyV = Instance.new("BodyVelocity", char.HumanoidRootPart)
         flyBodyV.MaxForce = Vector3.new(9e9, 9e9, 9e9)
         flyBodyG = Instance.new("BodyGyro", char.HumanoidRootPart)
         flyBodyG.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
         flyBodyG.P = 1e4
+        
+        local PlayerModule = require(p.PlayerScripts:WaitForChild("PlayerModule"))
+        local Controls = PlayerModule:GetControls()
+        
         coroutine.wrap(function()
             while flying do
-                local md = Vector3.new(0,0,0)
-                if UserInputService:IsKeyDown(Enum.KeyCode.W) then md = md + cam.CFrame.LookVector end
-                if UserInputService:IsKeyDown(Enum.KeyCode.S) then md = md - cam.CFrame.LookVector end
-                if UserInputService:IsKeyDown(Enum.KeyCode.A) then md = md - cam.CFrame.RightVector end
-                if UserInputService:IsKeyDown(Enum.KeyCode.D) then md = md + cam.CFrame.RightVector end
-                if UserInputService:IsKeyDown(Enum.KeyCode.Space) then md = md + Vector3.new(0,1,0) end
-                if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then md = md - Vector3.new(0,1,0) end
+                local moveVector = Controls:GetMoveVector()
+                local md = Vector3.new(0, 0, 0)
+                
+                md = md + (cam.CFrame.RightVector * moveVector.X)
+                md = md + (cam.CFrame.LookVector * -moveVector.Z)
+                
+                if UserInputService:IsKeyDown(Enum.KeyCode.Space) then md = md + Vector3.new(0, 1, 0) end
+                if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then md = md - Vector3.new(0, 1, 0) end
+                
+                if md.Magnitude > 0 then
+                    md = md.Unit
+                end
+                
                 flyBodyV.Velocity = md * flySpeed
                 flyBodyG.CFrame = cam.CFrame
+                
                 RunService.RenderStepped:Wait()
             end
         end)()
     else
-        char.Humanoid.PlatformStand = false
+        humanoid.PlatformStand = false
         if flyBodyV then flyBodyV:Destroy() end
         if flyBodyG then flyBodyG:Destroy() end
     end
@@ -223,7 +256,11 @@ createToggle("Infinite Jump", function(state) infJ = state end)
 
 local noclip = false
 RunService.Stepped:Connect(function()
-    if noclip and p.Character then for _,v in pairs(p.Character:GetDescendants()) do if v:IsA("BasePart") then v.CanCollide = false end end end
+    if noclip and p.Character then 
+        for _,v in pairs(p.Character:GetDescendants()) do 
+            if v:IsA("BasePart") then v.CanCollide = false end 
+        end 
+    end
 end)
 createToggle("Noclip", function(state) noclip = state end)
 
