@@ -13,31 +13,37 @@ local cam = workspace.CurrentCamera
 local mouse = p:GetMouse()
 
 local sg = Instance.new("ScreenGui")
-sg.Name = "ProHubUI_V11_Ultimate"
+sg.Name = "ProHubUI_V12_Premium"
 sg.ResetOnSpawn = false
 sg.IgnoreGuiInset = true
 
 local success, _ = pcall(function() sg.Parent = CoreGui end)
 if not success then sg.Parent = p:WaitForChild("PlayerGui") end
 
-local mainColor = Color3.fromRGB(255, 30, 60)
-local darkBg = Color3.fromRGB(15, 10, 10)
-local lightBg = Color3.fromRGB(25, 15, 15)
+local mainColor = Color3.fromRGB(0, 210, 255)
+local secColor = Color3.fromRGB(140, 0, 255)
+local darkBg = Color3.fromRGB(15, 15, 20)
+local lightBg = Color3.fromRGB(28, 28, 35)
 
 local fb = Instance.new("TextButton")
-fb.Size = UDim2.new(0, 60, 0, 60)
-fb.Position = UDim2.new(0, 15, 0.5, -30)
-fb.BackgroundColor3 = darkBg
-fb.Text = "V11"
-fb.TextColor3 = mainColor
-fb.TextSize = 28
+fb.Size = UDim2.new(0, 70, 0, 70)
+fb.Position = UDim2.new(0, 20, 0.5, -35)
+fb.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+fb.Text = "V12"
+fb.TextColor3 = Color3.fromRGB(255, 255, 255)
+fb.TextSize = 30
 fb.Font = Enum.Font.GothamBlack
 fb.Parent = sg
 
+local fbGrad = Instance.new("UIGradient", fb)
+fbGrad.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, secColor), ColorSequenceKeypoint.new(1, mainColor)})
+fbGrad.Rotation = 45
+
 Instance.new("UICorner", fb).CornerRadius = UDim.new(1, 0)
 local fbStroke = Instance.new("UIStroke", fb)
-fbStroke.Color = mainColor
-fbStroke.Thickness = 3.5
+fbStroke.Color = Color3.fromRGB(255, 255, 255)
+fbStroke.Thickness = 2.5
+fbStroke.Transparency = 0.2
 
 local drag, dragStart, startPos
 fb.InputBegan:Connect(function(i)
@@ -59,24 +65,26 @@ UserInputService.InputChanged:Connect(function(i)
 end)
 
 local mf = Instance.new("Frame")
-mf.Size = UDim2.new(0, 400, 0, 0)
-mf.Position = UDim2.new(0.5, -200, 0.5, -300)
+mf.Size = UDim2.new(0, 500, 0, 0)
+mf.Position = UDim2.new(0.5, -250, 0.5, -200)
 mf.BackgroundColor3 = darkBg
 mf.Visible = false
 mf.ClipsDescendants = true
 mf.Parent = sg
 
-Instance.new("UICorner", mf).CornerRadius = UDim.new(0, 14)
+Instance.new("UICorner", mf).CornerRadius = UDim.new(0, 16)
 local mfStroke = Instance.new("UIStroke", mf)
-mfStroke.Color = mainColor
-mfStroke.Thickness = 2.5
+mfStroke.Color = Color3.fromRGB(255, 255, 255)
+mfStroke.Thickness = 2
+local mfStrokeGrad = Instance.new("UIGradient", mfStroke)
+mfStrokeGrad.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, mainColor), ColorSequenceKeypoint.new(1, secColor)})
 
 fb.MouseButton1Click:Connect(function() 
     mf.Visible = true
     if mf.Size.Y.Offset == 0 then
-        TweenService:Create(mf, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, 400, 0, 600)}):Play()
+        TweenService:Create(mf, TweenInfo.new(0.5, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Size = UDim2.new(0, 500, 0, 400)}):Play()
     else
-        local closeTween = TweenService:Create(mf, TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.In), {Size = UDim2.new(0, 400, 0, 0)})
+        local closeTween = TweenService:Create(mf, TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.In), {Size = UDim2.new(0, 500, 0, 0)})
         closeTween:Play()
         closeTween.Completed:Connect(function()
             if mf.Size.Y.Offset == 0 then mf.Visible = false end
@@ -84,70 +92,71 @@ fb.MouseButton1Click:Connect(function()
     end
 end)
 
+local header = Instance.new("Frame", mf)
+header.Size = UDim2.new(1, 0, 0, 60)
+header.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+header.BorderSizePixel = 0
+local headGrad = Instance.new("UIGradient", header)
+headGrad.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, secColor), ColorSequenceKeypoint.new(1, mainColor)})
+
 local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, 0, 0, 50)
+title.Size = UDim2.new(1, 0, 1, 0)
 title.BackgroundTransparency = 1
-title.Text = "CONTROL MENU V11"
+title.Text = "CONTROL MENU V12 PRO"
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
 title.Font = Enum.Font.GothamBlack
-title.TextSize = 24
-title.Parent = mf
-
-local divider = Instance.new("Frame")
-divider.Size = UDim2.new(1, 0, 0, 2)
-divider.Position = UDim2.new(0, 0, 0, 50)
-divider.BackgroundColor3 = mainColor
-divider.BorderSizePixel = 0
-divider.Parent = mf
+title.TextSize = 26
+title.Parent = header
 
 local scroll = Instance.new("ScrollingFrame")
-scroll.Size = UDim2.new(1, 0, 1, -60)
-scroll.Position = UDim2.new(0, 0, 0, 55)
+scroll.Size = UDim2.new(1, -20, 1, -80)
+scroll.Position = UDim2.new(0, 10, 0, 70)
 scroll.BackgroundTransparency = 1
-scroll.ScrollBarThickness = 5
+scroll.ScrollBarThickness = 6
 scroll.ScrollBarImageColor3 = mainColor
 scroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
 scroll.Parent = mf
 
 local layout = Instance.new("UIListLayout")
 layout.Padding = UDim.new(0, 12)
+layout.SortOrder = Enum.SortOrder.LayoutOrder
 layout.Parent = scroll
 
 local padding = Instance.new("UIPadding", scroll)
-padding.PaddingLeft = UDim.new(0, 15)
+padding.PaddingLeft = UDim.new(0, 5)
 padding.PaddingRight = UDim.new(0, 15)
-padding.PaddingTop = UDim.new(0, 10)
+padding.PaddingTop = UDim.new(0, 5)
 padding.PaddingBottom = UDim.new(0, 10)
 
 local function createToggle(name, callback)
     local container = Instance.new("Frame")
-    container.Size = UDim2.new(1, 0, 0, 45)
+    container.Size = UDim2.new(1, 0, 0, 50)
     container.BackgroundColor3 = lightBg
     container.Parent = scroll
-    Instance.new("UICorner", container).CornerRadius = UDim.new(0, 8)
+    Instance.new("UICorner", container).CornerRadius = UDim.new(0, 10)
     
     local lbl = Instance.new("TextLabel")
-    lbl.Size = UDim2.new(0, 220, 1, 0)
-    lbl.Position = UDim2.new(0, 15, 0, 0)
+    lbl.Size = UDim2.new(0, 300, 1, 0)
+    lbl.Position = UDim2.new(0, 20, 0, 0)
     lbl.BackgroundTransparency = 1
     lbl.Text = name
-    lbl.TextColor3 = Color3.fromRGB(240, 240, 240)
-    lbl.Font = Enum.Font.GothamSemibold
+    lbl.TextColor3 = Color3.fromRGB(235, 235, 245)
+    lbl.Font = Enum.Font.GothamBold
     lbl.TextSize = 16
     lbl.TextXAlignment = Enum.TextXAlignment.Left
     lbl.Parent = container
     
     local bg = Instance.new("Frame")
-    bg.Size = UDim2.new(0, 50, 0, 26)
-    bg.Position = UDim2.new(1, -65, 0.5, -13)
-    bg.BackgroundColor3 = Color3.fromRGB(40, 30, 30)
+    bg.Size = UDim2.new(0, 56, 0, 28)
+    bg.Position = UDim2.new(1, -76, 0.5, -14)
+    bg.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
     bg.Parent = container
     Instance.new("UICorner", bg).CornerRadius = UDim.new(1, 0)
     
     local knob = Instance.new("Frame")
     knob.Size = UDim2.new(0, 22, 0, 22)
-    knob.Position = UDim2.new(0, 2, 0.5, -11)
-    knob.BackgroundColor3 = Color3.fromRGB(180, 180, 180)
+    knob.Position = UDim2.new(0, 3, 0.5, -11)
+    knob.BackgroundColor3 = Color3.fromRGB(160, 160, 170)
     knob.Parent = bg
     Instance.new("UICorner", knob).CornerRadius = UDim.new(1, 0)
     
@@ -160,12 +169,12 @@ local function createToggle(name, callback)
     local state = false
     btn.MouseButton1Click:Connect(function()
         state = not state
-        TweenService:Create(knob, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-            Position = state and UDim2.new(1, -24, 0.5, -11) or UDim2.new(0, 2, 0.5, -11), 
-            BackgroundColor3 = state and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(180, 180, 180)
+        TweenService:Create(knob, TweenInfo.new(0.3, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
+            Position = state and UDim2.new(1, -25, 0.5, -11) or UDim2.new(0, 3, 0.5, -11), 
+            BackgroundColor3 = Color3.fromRGB(255, 255, 255)
         }):Play()
-        TweenService:Create(bg, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-            BackgroundColor3 = state and mainColor or Color3.fromRGB(40, 30, 30)
+        TweenService:Create(bg, TweenInfo.new(0.3, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
+            BackgroundColor3 = state and mainColor or Color3.fromRGB(45, 45, 55)
         }):Play()
         callback(state)
     end)
@@ -173,32 +182,32 @@ end
 
 local function createInput(name, default, callback)
     local container = Instance.new("Frame")
-    container.Size = UDim2.new(1, 0, 0, 45)
+    container.Size = UDim2.new(1, 0, 0, 50)
     container.BackgroundColor3 = lightBg
     container.Parent = scroll
-    Instance.new("UICorner", container).CornerRadius = UDim.new(0, 8)
+    Instance.new("UICorner", container).CornerRadius = UDim.new(0, 10)
     
     local lbl = Instance.new("TextLabel")
-    lbl.Size = UDim2.new(0, 180, 1, 0)
-    lbl.Position = UDim2.new(0, 15, 0, 0)
+    lbl.Size = UDim2.new(0, 250, 1, 0)
+    lbl.Position = UDim2.new(0, 20, 0, 0)
     lbl.BackgroundTransparency = 1
     lbl.Text = name
-    lbl.TextColor3 = Color3.fromRGB(240, 240, 240)
-    lbl.Font = Enum.Font.GothamSemibold
+    lbl.TextColor3 = Color3.fromRGB(235, 235, 245)
+    lbl.Font = Enum.Font.GothamBold
     lbl.TextSize = 16
     lbl.TextXAlignment = Enum.TextXAlignment.Left
     lbl.Parent = container
     
     local box = Instance.new("TextBox")
-    box.Size = UDim2.new(0, 100, 0, 30)
-    box.Position = UDim2.new(1, -115, 0.5, -15)
+    box.Size = UDim2.new(0, 120, 0, 34)
+    box.Position = UDim2.new(1, -140, 0.5, -17)
     box.BackgroundColor3 = darkBg
     box.TextColor3 = mainColor
     box.Text = tostring(default)
     box.Font = Enum.Font.GothamBold
-    box.TextSize = 15
+    box.TextSize = 16
     box.Parent = container
-    Instance.new("UICorner", box).CornerRadius = UDim.new(0, 6)
+    Instance.new("UICorner", box).CornerRadius = UDim.new(0, 8)
     
     local boxStroke = Instance.new("UIStroke", box)
     boxStroke.Color = mainColor
@@ -208,23 +217,30 @@ local function createInput(name, default, callback)
 end
 
 local function createButton(name, callback)
-    local container = Instance.new("Frame")
-    container.Size = UDim2.new(1, 0, 0, 45)
+    local container = Instance.new("TextButton")
+    container.Size = UDim2.new(1, 0, 0, 50)
     container.BackgroundColor3 = lightBg
+    container.Text = name
+    container.TextColor3 = Color3.fromRGB(255, 255, 255)
+    container.Font = Enum.Font.GothamBlack
+    container.TextSize = 17
     container.Parent = scroll
-    Instance.new("UICorner", container).CornerRadius = UDim.new(0, 8)
+    Instance.new("UICorner", container).CornerRadius = UDim.new(0, 10)
     
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, 0, 1, 0)
-    btn.BackgroundTransparency = 1
-    btn.Text = name
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 16
-    btn.Parent = container
+    local stroke = Instance.new("UIStroke", container)
+    stroke.Color = mainColor
+    stroke.Thickness = 0
+    stroke.Transparency = 0.2
     
-    btn.MouseButton1Click:Connect(function()
-        local clickTween = TweenService:Create(container, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, 0, true), {BackgroundColor3 = mainColor})
+    container.MouseEnter:Connect(function()
+        TweenService:Create(stroke, TweenInfo.new(0.2), {Thickness = 2}):Play()
+    end)
+    container.MouseLeave:Connect(function()
+        TweenService:Create(stroke, TweenInfo.new(0.2), {Thickness = 0}):Play()
+    end)
+    
+    container.MouseButton1Click:Connect(function()
+        local clickTween = TweenService:Create(container, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, 0, true), {BackgroundColor3 = secColor})
         clickTween:Play()
         callback()
     end)
@@ -252,7 +268,7 @@ RunService.RenderStepped:Connect(function()
         end
     end
 end)
-createToggle("Aimbot (V11 Ultra)", function(state) aimbot = state end)
+createToggle("Aimbot (V12 Ultra)", function(state) aimbot = state end)
 
 local flySpeed = 50
 createInput("Fly Speed", 50, function(txt) flySpeed = tonumber(txt) or 50 end)
@@ -346,20 +362,20 @@ local esp = false
 RunService.RenderStepped:Connect(function()
     for _, v in pairs(Players:GetPlayers()) do
         if v ~= p and v.Character then
-            if esp and not v.Character:FindFirstChild("V11_Highlight") then
+            if esp and not v.Character:FindFirstChild("V12_Highlight") then
                 local hl = Instance.new("Highlight", v.Character)
-                hl.Name = "V11_Highlight"
+                hl.Name = "V12_Highlight"
                 hl.FillColor = mainColor
-                hl.OutlineColor = Color3.fromRGB(255, 255, 255)
+                hl.OutlineColor = secColor
                 hl.FillTransparency = 0.25
-                hl.OutlineTransparency = 0
-            elseif not esp and v.Character:FindFirstChild("V11_Highlight") then
-                v.Character.V11_Highlight:Destroy()
+                hl.OutlineTransparency = 0.1
+            elseif not esp and v.Character:FindFirstChild("V12_Highlight") then
+                v.Character.V12_Highlight:Destroy()
             end
         end
     end
 end)
-createToggle("ESP Player (V11)", function(state) esp = state end)
+createToggle("ESP Player (V12)", function(state) esp = state end)
 
 local tracers = false
 RunService.RenderStepped:Connect(function()
@@ -367,11 +383,11 @@ RunService.RenderStepped:Connect(function()
         if v ~= p and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
             local hrp = v.Character.HumanoidRootPart
             if tracers then
-                if not hrp:FindFirstChild("V11_Tracer") then
+                if not hrp:FindFirstChild("V12_Tracer") then
                     local att0 = Instance.new("Attachment", p.Character and p.Character:FindFirstChild("HumanoidRootPart") or workspace.Terrain)
                     local att1 = Instance.new("Attachment", hrp)
                     local beam = Instance.new("Beam", hrp)
-                    beam.Name = "V11_Tracer"
+                    beam.Name = "V12_Tracer"
                     beam.Attachment0 = att0
                     beam.Attachment1 = att1
                     beam.Color = ColorSequence.new(mainColor)
@@ -379,22 +395,22 @@ RunService.RenderStepped:Connect(function()
                     beam.Width0 = 0.1
                     beam.Width1 = 0.1
                 else
-                    local beam = hrp:FindFirstChild("V11_Tracer")
+                    local beam = hrp:FindFirstChild("V12_Tracer")
                     if p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
                         beam.Attachment0.Parent = p.Character.HumanoidRootPart
                     end
                 end
             else
-                if hrp:FindFirstChild("V11_Tracer") then
-                    hrp.V11_Tracer.Attachment0:Destroy()
-                    hrp.V11_Tracer.Attachment1:Destroy()
-                    hrp.V11_Tracer:Destroy()
+                if hrp:FindFirstChild("V12_Tracer") then
+                    hrp.V12_Tracer.Attachment0:Destroy()
+                    hrp.V12_Tracer.Attachment1:Destroy()
+                    hrp.V12_Tracer:Destroy()
                 end
             end
         end
     end
 end)
-createToggle("ESP Tracers (V11)", function(state) tracers = state end)
+createToggle("ESP Tracers (V12)", function(state) tracers = state end)
 
 local hitboxSize = 10
 createInput("Hitbox Size", 10, function(txt) hitboxSize = tonumber(txt) or 10 end)
@@ -407,7 +423,7 @@ RunService.Heartbeat:Connect(function()
             if hitbox then
                 hrp.Size = Vector3.new(hitboxSize, hitboxSize, hitboxSize)
                 hrp.Transparency = 0.6
-                hrp.BrickColor = BrickColor.new("Really red")
+                hrp.BrickColor = BrickColor.new("Cyan")
                 hrp.CanCollide = false
             else
                 hrp.Size = Vector3.new(2, 2, 1)
@@ -451,16 +467,16 @@ createToggle("X-Ray", function(state)
     for _, v in pairs(workspace:GetDescendants()) do
         if v:IsA("BasePart") and not v.Parent:FindFirstChild("Humanoid") and v.Name ~= "HumanoidRootPart" then
             if xray then
-                if not v:FindFirstChild("V11_OriginalTransparency") then
+                if not v:FindFirstChild("V12_OriginalTransparency") then
                     local numVal = Instance.new("NumberValue", v)
-                    numVal.Name = "V11_OriginalTransparency"
+                    numVal.Name = "V12_OriginalTransparency"
                     numVal.Value = v.Transparency
                 end
                 v.Transparency = 0.75
             else
-                if v:FindFirstChild("V11_OriginalTransparency") then
-                    v.Transparency = v.V11_OriginalTransparency.Value
-                    v.V11_OriginalTransparency:Destroy()
+                if v:FindFirstChild("V12_OriginalTransparency") then
+                    v.Transparency = v.V12_OriginalTransparency.Value
+                    v.V12_OriginalTransparency:Destroy()
                 end
             end
         end
@@ -478,9 +494,9 @@ end)
 createToggle("Anti-AFK", function(state) antiAfk = state end)
 
 createToggle("Auto Clicker", function(state)
-    _G.AutoClickerV11 = state
+    _G.AutoClickerV12 = state
     task.spawn(function()
-        while _G.AutoClickerV11 do
+        while _G.AutoClickerV12 do
             VirtualUser:ClickButton1(Vector2.new(0, 0))
             task.wait(0.01)
         end
@@ -508,13 +524,13 @@ end)
 createToggle("Bunny Hop (Bhop)", function(state) bhop = state end)
 
 local antiVoidPart = nil
-createToggle("Anti-Void (V11)", function(state)
+createToggle("Anti-Void (V12)", function(state)
     if state then
         antiVoidPart = Instance.new("Part")
         antiVoidPart.Size = Vector3.new(10000, 5, 10000)
         antiVoidPart.Position = Vector3.new(0, -100, 0)
         antiVoidPart.Transparency = 0.5
-        antiVoidPart.BrickColor = BrickColor.new("Crimson")
+        antiVoidPart.BrickColor = BrickColor.new("Cyan")
         antiVoidPart.Material = Enum.Material.ForceField
         antiVoidPart.Anchored = true
         antiVoidPart.Parent = workspace
@@ -574,6 +590,7 @@ local airWalkEnabled = false
 local airPlatform = Instance.new("Part")
 airPlatform.Size = Vector3.new(10, 1, 10)
 airPlatform.Transparency = 0.5
+airPlatform.BrickColor = BrickColor.new("Toothpaste")
 airPlatform.Anchored = true
 RunService.RenderStepped:Connect(function()
     if airWalkEnabled and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
@@ -589,15 +606,15 @@ local chamsEnabled = false
 RunService.RenderStepped:Connect(function()
     for _, v in pairs(Players:GetPlayers()) do
         if v ~= p and v.Character then
-            if chamsEnabled and not v.Character:FindFirstChild("V11_Chams") then
+            if chamsEnabled and not v.Character:FindFirstChild("V12_Chams") then
                 local hl = Instance.new("Highlight", v.Character)
-                hl.Name = "V11_Chams"
-                hl.FillColor = Color3.fromRGB(0, 255, 0)
+                hl.Name = "V12_Chams"
+                hl.FillColor = mainColor
                 hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-                hl.FillTransparency = 0.5
-                hl.OutlineTransparency = 0
-            elseif not chamsEnabled and v.Character:FindFirstChild("V11_Chams") then
-                v.Character.V11_Chams:Destroy()
+                hl.FillTransparency = 0.4
+                hl.OutlineTransparency = 0.1
+            elseif not chamsEnabled and v.Character:FindFirstChild("V12_Chams") then
+                v.Character.V12_Chams:Destroy()
             end
         end
     end
@@ -605,7 +622,7 @@ end)
 createToggle("Chams (Wallhack)", function(state) chamsEnabled = state end)
 
 local autoChat = false
-local chatMsg = "ProHub V11 is the best!"
+local chatMsg = "ProHub V12 Premium is the best!"
 createInput("Auto Chat Text", chatMsg, function(txt) chatMsg = txt end)
 task.spawn(function()
     while task.wait(3) do
