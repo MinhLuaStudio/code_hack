@@ -13,7 +13,7 @@ local cam = workspace.CurrentCamera
 local mouse = p:GetMouse()
 
 local sg = Instance.new("ScreenGui")
-sg.Name = "ProHubUI_V10_Ultimate"
+sg.Name = "ProHubUI_V11_Ultimate"
 sg.ResetOnSpawn = false
 sg.IgnoreGuiInset = true
 
@@ -28,7 +28,7 @@ local fb = Instance.new("TextButton")
 fb.Size = UDim2.new(0, 60, 0, 60)
 fb.Position = UDim2.new(0, 15, 0.5, -30)
 fb.BackgroundColor3 = darkBg
-fb.Text = "V10"
+fb.Text = "V11"
 fb.TextColor3 = mainColor
 fb.TextSize = 28
 fb.Font = Enum.Font.GothamBlack
@@ -87,7 +87,7 @@ end)
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0, 50)
 title.BackgroundTransparency = 1
-title.Text = "CONTROL MENU V10"
+title.Text = "CONTROL MENU V11"
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
 title.Font = Enum.Font.GothamBlack
 title.TextSize = 24
@@ -252,7 +252,7 @@ RunService.RenderStepped:Connect(function()
         end
     end
 end)
-createToggle("Aimbot (V10 Ultra)", function(state) aimbot = state end)
+createToggle("Aimbot (V11 Ultra)", function(state) aimbot = state end)
 
 local flySpeed = 50
 createInput("Fly Speed", 50, function(txt) flySpeed = tonumber(txt) or 50 end)
@@ -346,20 +346,20 @@ local esp = false
 RunService.RenderStepped:Connect(function()
     for _, v in pairs(Players:GetPlayers()) do
         if v ~= p and v.Character then
-            if esp and not v.Character:FindFirstChild("V10_Highlight") then
+            if esp and not v.Character:FindFirstChild("V11_Highlight") then
                 local hl = Instance.new("Highlight", v.Character)
-                hl.Name = "V10_Highlight"
+                hl.Name = "V11_Highlight"
                 hl.FillColor = mainColor
                 hl.OutlineColor = Color3.fromRGB(255, 255, 255)
                 hl.FillTransparency = 0.25
                 hl.OutlineTransparency = 0
-            elseif not esp and v.Character:FindFirstChild("V10_Highlight") then
-                v.Character.V10_Highlight:Destroy()
+            elseif not esp and v.Character:FindFirstChild("V11_Highlight") then
+                v.Character.V11_Highlight:Destroy()
             end
         end
     end
 end)
-createToggle("ESP Player (V10)", function(state) esp = state end)
+createToggle("ESP Player (V11)", function(state) esp = state end)
 
 local tracers = false
 RunService.RenderStepped:Connect(function()
@@ -367,11 +367,11 @@ RunService.RenderStepped:Connect(function()
         if v ~= p and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
             local hrp = v.Character.HumanoidRootPart
             if tracers then
-                if not hrp:FindFirstChild("V10_Tracer") then
+                if not hrp:FindFirstChild("V11_Tracer") then
                     local att0 = Instance.new("Attachment", p.Character and p.Character:FindFirstChild("HumanoidRootPart") or workspace.Terrain)
                     local att1 = Instance.new("Attachment", hrp)
                     local beam = Instance.new("Beam", hrp)
-                    beam.Name = "V10_Tracer"
+                    beam.Name = "V11_Tracer"
                     beam.Attachment0 = att0
                     beam.Attachment1 = att1
                     beam.Color = ColorSequence.new(mainColor)
@@ -379,22 +379,22 @@ RunService.RenderStepped:Connect(function()
                     beam.Width0 = 0.1
                     beam.Width1 = 0.1
                 else
-                    local beam = hrp:FindFirstChild("V10_Tracer")
+                    local beam = hrp:FindFirstChild("V11_Tracer")
                     if p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
                         beam.Attachment0.Parent = p.Character.HumanoidRootPart
                     end
                 end
             else
-                if hrp:FindFirstChild("V10_Tracer") then
-                    hrp.V10_Tracer.Attachment0:Destroy()
-                    hrp.V10_Tracer.Attachment1:Destroy()
-                    hrp.V10_Tracer:Destroy()
+                if hrp:FindFirstChild("V11_Tracer") then
+                    hrp.V11_Tracer.Attachment0:Destroy()
+                    hrp.V11_Tracer.Attachment1:Destroy()
+                    hrp.V11_Tracer:Destroy()
                 end
             end
         end
     end
 end)
-createToggle("ESP Tracers (V10)", function(state) tracers = state end)
+createToggle("ESP Tracers (V11)", function(state) tracers = state end)
 
 local hitboxSize = 10
 createInput("Hitbox Size", 10, function(txt) hitboxSize = tonumber(txt) or 10 end)
@@ -451,16 +451,16 @@ createToggle("X-Ray", function(state)
     for _, v in pairs(workspace:GetDescendants()) do
         if v:IsA("BasePart") and not v.Parent:FindFirstChild("Humanoid") and v.Name ~= "HumanoidRootPart" then
             if xray then
-                if not v:FindFirstChild("V10_OriginalTransparency") then
+                if not v:FindFirstChild("V11_OriginalTransparency") then
                     local numVal = Instance.new("NumberValue", v)
-                    numVal.Name = "V10_OriginalTransparency"
+                    numVal.Name = "V11_OriginalTransparency"
                     numVal.Value = v.Transparency
                 end
                 v.Transparency = 0.75
             else
-                if v:FindFirstChild("V10_OriginalTransparency") then
-                    v.Transparency = v.V10_OriginalTransparency.Value
-                    v.V10_OriginalTransparency:Destroy()
+                if v:FindFirstChild("V11_OriginalTransparency") then
+                    v.Transparency = v.V11_OriginalTransparency.Value
+                    v.V11_OriginalTransparency:Destroy()
                 end
             end
         end
@@ -478,9 +478,9 @@ end)
 createToggle("Anti-AFK", function(state) antiAfk = state end)
 
 createToggle("Auto Clicker", function(state)
-    _G.AutoClickerV10 = state
+    _G.AutoClickerV11 = state
     task.spawn(function()
-        while _G.AutoClickerV10 do
+        while _G.AutoClickerV11 do
             VirtualUser:ClickButton1(Vector2.new(0, 0))
             task.wait(0.01)
         end
@@ -508,7 +508,7 @@ end)
 createToggle("Bunny Hop (Bhop)", function(state) bhop = state end)
 
 local antiVoidPart = nil
-createToggle("Anti-Void (V10)", function(state)
+createToggle("Anti-Void (V11)", function(state)
     if state then
         antiVoidPart = Instance.new("Part")
         antiVoidPart.Size = Vector3.new(10000, 5, 10000)
@@ -551,6 +551,79 @@ RunService.Heartbeat:Connect(function()
     end
 end)
 createToggle("Disco Time Cycle", function(state) discoTime = state end)
+
+local clickDel = false
+mouse.Button1Down:Connect(function()
+    if clickDel and mouse.Target then
+        mouse.Target:Destroy()
+    end
+end)
+createToggle("Click Delete Part", function(state) clickDel = state end)
+
+local dashEnabled = false
+UserInputService.InputBegan:Connect(function(input, gpe)
+    if dashEnabled and not gpe and input.KeyCode == Enum.KeyCode.Q then
+        if p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+            p.Character.HumanoidRootPart.CFrame = p.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -25)
+        end
+    end
+end)
+createToggle("Dash (Press Q)", function(state) dashEnabled = state end)
+
+local airWalkEnabled = false
+local airPlatform = Instance.new("Part")
+airPlatform.Size = Vector3.new(10, 1, 10)
+airPlatform.Transparency = 0.5
+airPlatform.Anchored = true
+RunService.RenderStepped:Connect(function()
+    if airWalkEnabled and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+        airPlatform.Parent = workspace
+        airPlatform.CFrame = p.Character.HumanoidRootPart.CFrame * CFrame.new(0, -3.5, 0)
+    else
+        airPlatform.Parent = nil
+    end
+end)
+createToggle("Air Walk", function(state) airWalkEnabled = state end)
+
+local chamsEnabled = false
+RunService.RenderStepped:Connect(function()
+    for _, v in pairs(Players:GetPlayers()) do
+        if v ~= p and v.Character then
+            if chamsEnabled and not v.Character:FindFirstChild("V11_Chams") then
+                local hl = Instance.new("Highlight", v.Character)
+                hl.Name = "V11_Chams"
+                hl.FillColor = Color3.fromRGB(0, 255, 0)
+                hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+                hl.FillTransparency = 0.5
+                hl.OutlineTransparency = 0
+            elseif not chamsEnabled and v.Character:FindFirstChild("V11_Chams") then
+                v.Character.V11_Chams:Destroy()
+            end
+        end
+    end
+end)
+createToggle("Chams (Wallhack)", function(state) chamsEnabled = state end)
+
+local autoChat = false
+local chatMsg = "ProHub V11 is the best!"
+createInput("Auto Chat Text", chatMsg, function(txt) chatMsg = txt end)
+task.spawn(function()
+    while task.wait(3) do
+        if autoChat then
+            local TextChatService = game:GetService("TextChatService")
+            if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+                local tc = TextChatService.TextChannels:FindFirstChild("RBXGeneral")
+                if tc then tc:SendAsync(chatMsg) end
+            else
+                local ReplicatedStorage = game:GetService("ReplicatedStorage")
+                if ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents") then
+                    ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(chatMsg, "All")
+                end
+            end
+        end
+    end
+end)
+createToggle("Auto Chat Spam", function(state) autoChat = state end)
 
 createButton("FPS Boost", function()
     for _, v in pairs(workspace:GetDescendants()) do
