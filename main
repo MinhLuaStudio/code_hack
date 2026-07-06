@@ -3,29 +3,41 @@ local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local CoreGui = game:GetService("CoreGui")
+local Lighting = game:GetService("Lighting")
+local VirtualUser = game:GetService("VirtualUser")
+local TeleportService = game:GetService("TeleportService")
+local HttpService = game:GetService("HttpService")
 
 local p = Players.LocalPlayer
 local cam = workspace.CurrentCamera
+local mouse = p:GetMouse()
 
 local sg = Instance.new("ScreenGui")
-sg.Name = "ProHubUI_V2"
+sg.Name = "ProHubUI_V10_Ultimate"
 sg.ResetOnSpawn = false
+sg.IgnoreGuiInset = true
+
 local success, _ = pcall(function() sg.Parent = CoreGui end)
 if not success then sg.Parent = p:WaitForChild("PlayerGui") end
 
+local mainColor = Color3.fromRGB(255, 30, 60)
+local darkBg = Color3.fromRGB(15, 10, 10)
+local lightBg = Color3.fromRGB(25, 15, 15)
+
 local fb = Instance.new("TextButton")
-fb.Size = UDim2.new(0, 50, 0, 50)
-fb.Position = UDim2.new(0, 15, 0.5, -25)
-fb.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
-fb.Text = "P"
-fb.TextColor3 = Color3.fromRGB(0, 170, 255)
-fb.TextSize = 24
+fb.Size = UDim2.new(0, 60, 0, 60)
+fb.Position = UDim2.new(0, 15, 0.5, -30)
+fb.BackgroundColor3 = darkBg
+fb.Text = "V10"
+fb.TextColor3 = mainColor
+fb.TextSize = 28
 fb.Font = Enum.Font.GothamBlack
 fb.Parent = sg
+
 Instance.new("UICorner", fb).CornerRadius = UDim.new(1, 0)
 local fbStroke = Instance.new("UIStroke", fb)
-fbStroke.Color = Color3.fromRGB(0, 170, 255)
-fbStroke.Thickness = 2
+fbStroke.Color = mainColor
+fbStroke.Thickness = 3.5
 
 local drag, dragStart, startPos
 fb.InputBegan:Connect(function(i)
@@ -42,90 +54,100 @@ end)
 UserInputService.InputChanged:Connect(function(i)
     if drag and (i.UserInputType == Enum.UserInputType.MouseMovement or i.UserInputType == Enum.UserInputType.Touch) then
         local delta = i.Position - dragStart
-        TweenService:Create(fb, TweenInfo.new(0.1, Enum.EasingStyle.Sine), {Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)}):Play()
+        TweenService:Create(fb, TweenInfo.new(0.08, Enum.EasingStyle.Sine), {Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)}):Play()
     end
 end)
 
 local mf = Instance.new("Frame")
-mf.Size = UDim2.new(0, 300, 0, 480)
-mf.Position = UDim2.new(0.5, -150, 0.5, -240)
-mf.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+mf.Size = UDim2.new(0, 400, 0, 0)
+mf.Position = UDim2.new(0.5, -200, 0.5, -300)
+mf.BackgroundColor3 = darkBg
 mf.Visible = false
 mf.ClipsDescendants = true
 mf.Parent = sg
-Instance.new("UICorner", mf).CornerRadius = UDim.new(0, 10)
+
+Instance.new("UICorner", mf).CornerRadius = UDim.new(0, 14)
 local mfStroke = Instance.new("UIStroke", mf)
-mfStroke.Color = Color3.fromRGB(0, 170, 255)
-mfStroke.Thickness = 1.5
+mfStroke.Color = mainColor
+mfStroke.Thickness = 2.5
 
 fb.MouseButton1Click:Connect(function() 
-    mf.Visible = not mf.Visible 
-    if mf.Visible then
-        mf.Size = UDim2.new(0, 300, 0, 0)
-        TweenService:Create(mf, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 300, 0, 480)}):Play()
+    mf.Visible = true
+    if mf.Size.Y.Offset == 0 then
+        TweenService:Create(mf, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, 400, 0, 600)}):Play()
+    else
+        local closeTween = TweenService:Create(mf, TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.In), {Size = UDim2.new(0, 400, 0, 0)})
+        closeTween:Play()
+        closeTween.Completed:Connect(function()
+            if mf.Size.Y.Offset == 0 then mf.Visible = false end
+        end)
     end
 end)
 
 local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, 0, 0, 45)
+title.Size = UDim2.new(1, 0, 0, 50)
 title.BackgroundTransparency = 1
-title.Text = "CONTROL MENU V2"
+title.Text = "CONTROL MENU V10"
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
 title.Font = Enum.Font.GothamBlack
-title.TextSize = 18
+title.TextSize = 24
 title.Parent = mf
 
 local divider = Instance.new("Frame")
-divider.Size = UDim2.new(1, 0, 0, 1)
-divider.Position = UDim2.new(0, 0, 0, 45)
-divider.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+divider.Size = UDim2.new(1, 0, 0, 2)
+divider.Position = UDim2.new(0, 0, 0, 50)
+divider.BackgroundColor3 = mainColor
+divider.BorderSizePixel = 0
 divider.Parent = mf
 
 local scroll = Instance.new("ScrollingFrame")
-scroll.Size = UDim2.new(1, 0, 1, -55)
-scroll.Position = UDim2.new(0, 0, 0, 50)
+scroll.Size = UDim2.new(1, 0, 1, -60)
+scroll.Position = UDim2.new(0, 0, 0, 55)
 scroll.BackgroundTransparency = 1
-scroll.ScrollBarThickness = 3
-scroll.ScrollBarImageColor3 = Color3.fromRGB(0, 170, 255)
+scroll.ScrollBarThickness = 5
+scroll.ScrollBarImageColor3 = mainColor
+scroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
 scroll.Parent = mf
 
 local layout = Instance.new("UIListLayout")
-layout.Padding = UDim.new(0, 8)
+layout.Padding = UDim.new(0, 12)
 layout.Parent = scroll
+
 local padding = Instance.new("UIPadding", scroll)
 padding.PaddingLeft = UDim.new(0, 15)
 padding.PaddingRight = UDim.new(0, 15)
-padding.PaddingTop = UDim.new(0, 5)
+padding.PaddingTop = UDim.new(0, 10)
+padding.PaddingBottom = UDim.new(0, 10)
 
 local function createToggle(name, callback)
     local container = Instance.new("Frame")
-    container.Size = UDim2.new(1, 0, 0, 40)
-    container.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+    container.Size = UDim2.new(1, 0, 0, 45)
+    container.BackgroundColor3 = lightBg
     container.Parent = scroll
-    Instance.new("UICorner", container).CornerRadius = UDim.new(0, 6)
+    Instance.new("UICorner", container).CornerRadius = UDim.new(0, 8)
     
     local lbl = Instance.new("TextLabel")
-    lbl.Size = UDim2.new(0, 180, 1, 0)
+    lbl.Size = UDim2.new(0, 220, 1, 0)
     lbl.Position = UDim2.new(0, 15, 0, 0)
     lbl.BackgroundTransparency = 1
     lbl.Text = name
     lbl.TextColor3 = Color3.fromRGB(240, 240, 240)
-    lbl.Font = Enum.Font.GothamMedium
-    lbl.TextSize = 14
+    lbl.Font = Enum.Font.GothamSemibold
+    lbl.TextSize = 16
     lbl.TextXAlignment = Enum.TextXAlignment.Left
     lbl.Parent = container
     
     local bg = Instance.new("Frame")
-    bg.Size = UDim2.new(0, 44, 0, 22)
-    bg.Position = UDim2.new(1, -55, 0.5, -11)
-    bg.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+    bg.Size = UDim2.new(0, 50, 0, 26)
+    bg.Position = UDim2.new(1, -65, 0.5, -13)
+    bg.BackgroundColor3 = Color3.fromRGB(40, 30, 30)
     bg.Parent = container
     Instance.new("UICorner", bg).CornerRadius = UDim.new(1, 0)
     
     local knob = Instance.new("Frame")
-    knob.Size = UDim2.new(0, 18, 0, 18)
-    knob.Position = UDim2.new(0, 2, 0.5, -9)
-    knob.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+    knob.Size = UDim2.new(0, 22, 0, 22)
+    knob.Position = UDim2.new(0, 2, 0.5, -11)
+    knob.BackgroundColor3 = Color3.fromRGB(180, 180, 180)
     knob.Parent = bg
     Instance.new("UICorner", knob).CornerRadius = UDim.new(1, 0)
     
@@ -138,45 +160,99 @@ local function createToggle(name, callback)
     local state = false
     btn.MouseButton1Click:Connect(function()
         state = not state
-        TweenService:Create(knob, TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = state and UDim2.new(1, -20, 0.5, -9) or UDim2.new(0, 2, 0.5, -9), BackgroundColor3 = state and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(200, 200, 200)}):Play()
-        TweenService:Create(bg, TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = state and Color3.fromRGB(0, 170, 255) or Color3.fromRGB(40, 40, 45)}):Play()
+        TweenService:Create(knob, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            Position = state and UDim2.new(1, -24, 0.5, -11) or UDim2.new(0, 2, 0.5, -11), 
+            BackgroundColor3 = state and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(180, 180, 180)
+        }):Play()
+        TweenService:Create(bg, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            BackgroundColor3 = state and mainColor or Color3.fromRGB(40, 30, 30)
+        }):Play()
         callback(state)
     end)
 end
 
 local function createInput(name, default, callback)
     local container = Instance.new("Frame")
-    container.Size = UDim2.new(1, 0, 0, 40)
-    container.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+    container.Size = UDim2.new(1, 0, 0, 45)
+    container.BackgroundColor3 = lightBg
     container.Parent = scroll
-    Instance.new("UICorner", container).CornerRadius = UDim.new(0, 6)
+    Instance.new("UICorner", container).CornerRadius = UDim.new(0, 8)
     
     local lbl = Instance.new("TextLabel")
-    lbl.Size = UDim2.new(0, 150, 1, 0)
+    lbl.Size = UDim2.new(0, 180, 1, 0)
     lbl.Position = UDim2.new(0, 15, 0, 0)
     lbl.BackgroundTransparency = 1
     lbl.Text = name
     lbl.TextColor3 = Color3.fromRGB(240, 240, 240)
-    lbl.Font = Enum.Font.GothamMedium
-    lbl.TextSize = 14
+    lbl.Font = Enum.Font.GothamSemibold
+    lbl.TextSize = 16
     lbl.TextXAlignment = Enum.TextXAlignment.Left
     lbl.Parent = container
     
     local box = Instance.new("TextBox")
-    box.Size = UDim2.new(0, 60, 0, 26)
-    box.Position = UDim2.new(1, -75, 0.5, -13)
-    box.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
-    box.TextColor3 = Color3.fromRGB(0, 170, 255)
+    box.Size = UDim2.new(0, 100, 0, 30)
+    box.Position = UDim2.new(1, -115, 0.5, -15)
+    box.BackgroundColor3 = darkBg
+    box.TextColor3 = mainColor
     box.Text = tostring(default)
     box.Font = Enum.Font.GothamBold
-    box.TextSize = 14
+    box.TextSize = 15
     box.Parent = container
-    Instance.new("UICorner", box).CornerRadius = UDim.new(0, 4)
+    Instance.new("UICorner", box).CornerRadius = UDim.new(0, 6)
+    
     local boxStroke = Instance.new("UIStroke", box)
-    boxStroke.Color = Color3.fromRGB(40, 40, 50)
+    boxStroke.Color = mainColor
+    boxStroke.Thickness = 1.5
     
     box.FocusLost:Connect(function() callback(box.Text) end)
 end
+
+local function createButton(name, callback)
+    local container = Instance.new("Frame")
+    container.Size = UDim2.new(1, 0, 0, 45)
+    container.BackgroundColor3 = lightBg
+    container.Parent = scroll
+    Instance.new("UICorner", container).CornerRadius = UDim.new(0, 8)
+    
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, 0, 1, 0)
+    btn.BackgroundTransparency = 1
+    btn.Text = name
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 16
+    btn.Parent = container
+    
+    btn.MouseButton1Click:Connect(function()
+        local clickTween = TweenService:Create(container, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, 0, true), {BackgroundColor3 = mainColor})
+        clickTween:Play()
+        callback()
+    end)
+end
+
+local aimbot = false
+RunService.RenderStepped:Connect(function()
+    if aimbot then
+        local closestPlayer = nil
+        local shortestDistance = math.huge
+        for _, v in pairs(Players:GetPlayers()) do
+            if v ~= p and v.Character and v.Character:FindFirstChild("Head") and v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health > 0 then
+                local pos, onScreen = cam:WorldToViewportPoint(v.Character.Head.Position)
+                if onScreen then
+                    local dist = (Vector2.new(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y) - Vector2.new(pos.X, pos.Y)).Magnitude
+                    if dist < shortestDistance then
+                        shortestDistance = dist
+                        closestPlayer = v
+                    end
+                end
+            end
+        end
+        if closestPlayer and closestPlayer.Character and closestPlayer.Character:FindFirstChild("Head") then
+            TweenService:Create(cam, TweenInfo.new(0.15, Enum.EasingStyle.Sine), {CFrame = CFrame.new(cam.CFrame.Position, closestPlayer.Character.Head.Position)}):Play()
+        end
+    end
+end)
+createToggle("Aimbot (V10 Ultra)", function(state) aimbot = state end)
 
 local flySpeed = 50
 createInput("Fly Speed", 50, function(txt) flySpeed = tonumber(txt) or 50 end)
@@ -187,7 +263,6 @@ createToggle("Fly Mode", function(state)
     flying = state
     local char = p.Character
     if not char or not char:FindFirstChild("HumanoidRootPart") then return end
-    
     local humanoid = char:FindFirstChildOfClass("Humanoid")
     if not humanoid then return end
 
@@ -197,32 +272,26 @@ createToggle("Fly Mode", function(state)
         flyBodyV.MaxForce = Vector3.new(9e9, 9e9, 9e9)
         flyBodyG = Instance.new("BodyGyro", char.HumanoidRootPart)
         flyBodyG.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
-        flyBodyG.P = 1e4
+        flyBodyG.P = 15000
         
         local PlayerModule = require(p.PlayerScripts:WaitForChild("PlayerModule"))
         local Controls = PlayerModule:GetControls()
         
-        coroutine.wrap(function()
-            while flying do
+        task.spawn(function()
+            while flying and char and char.Parent do
                 local moveVector = Controls:GetMoveVector()
                 local md = Vector3.new(0, 0, 0)
-                
                 md = md + (cam.CFrame.RightVector * moveVector.X)
                 md = md + (cam.CFrame.LookVector * -moveVector.Z)
-                
                 if UserInputService:IsKeyDown(Enum.KeyCode.Space) then md = md + Vector3.new(0, 1, 0) end
                 if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then md = md - Vector3.new(0, 1, 0) end
-                
-                if md.Magnitude > 0 then
-                    md = md.Unit
-                end
+                if md.Magnitude > 0 then md = md.Unit end
                 
                 flyBodyV.Velocity = md * flySpeed
                 flyBodyG.CFrame = cam.CFrame
-                
                 RunService.RenderStepped:Wait()
             end
-        end)()
+        end)
     else
         humanoid.PlatformStand = false
         if flyBodyV then flyBodyV:Destroy() end
@@ -230,27 +299,36 @@ createToggle("Fly Mode", function(state)
     end
 end)
 
-createToggle("Full Bright", function(state)
-    if state then loadstring(game:HttpGet("https://raw.githubusercontent.com/MinhLuaStudio/code_hack/refs/heads/main/brightness"))() end
+createInput("WalkSpeed", 16, function(txt)
+    if p.Character and p.Character:FindFirstChild("Humanoid") then p.Character.Humanoid.WalkSpeed = tonumber(txt) or 16 end
 end)
 
-local esp = false
-RunService.RenderStepped:Connect(function()
-    for _, v in pairs(Players:GetPlayers()) do
-        if v ~= p and v.Character then
-            if esp and not v.Character:FindFirstChild("Highlight") then
-                Instance.new("Highlight", v.Character).Name = "Highlight"
-            elseif not esp and v.Character:FindFirstChild("Highlight") then
-                v.Character.Highlight:Destroy()
-            end
-        end
+createInput("JumpPower", 50, function(txt)
+    if p.Character and p.Character:FindFirstChild("Humanoid") then
+        p.Character.Humanoid.UseJumpPower = true
+        p.Character.Humanoid.JumpPower = tonumber(txt) or 50
     end
 end)
-createToggle("ESP Player", function(state) esp = state end)
+
+createInput("Gravity", 196.2, function(txt)
+    workspace.Gravity = tonumber(txt) or 196.2
+end)
+
+createInput("Field of View", 70, function(txt)
+    cam.FieldOfView = tonumber(txt) or 70
+end)
+
+createInput("Camera Zoom", 12.5, function(txt)
+    p.CameraMaxZoomDistance = tonumber(txt) or 12.5
+    p.CameraMinZoomDistance = tonumber(txt) or 12.5
+end)
 
 local infJ = false
 UserInputService.JumpRequest:Connect(function()
-    if infJ and p.Character then p.Character:FindFirstChildOfClass("Humanoid"):ChangeState(Enum.HumanoidStateType.Jumping) end
+    if infJ and p.Character then 
+        local hum = p.Character:FindFirstChildOfClass("Humanoid")
+        if hum then hum:ChangeState(Enum.HumanoidStateType.Jumping) end
+    end
 end)
 createToggle("Infinite Jump", function(state) infJ = state end)
 
@@ -258,12 +336,275 @@ local noclip = false
 RunService.Stepped:Connect(function()
     if noclip and p.Character then 
         for _,v in pairs(p.Character:GetDescendants()) do 
-            if v:IsA("BasePart") then v.CanCollide = false end 
+            if v:IsA("BasePart") and v.CanCollide then v.CanCollide = false end 
         end 
     end
 end)
 createToggle("Noclip", function(state) noclip = state end)
 
-createInput("WalkSpeed", 16, function(txt)
-    if p.Character and p.Character:FindFirstChild("Humanoid") then p.Character.Humanoid.WalkSpeed = tonumber(txt) or 16 end
+local esp = false
+RunService.RenderStepped:Connect(function()
+    for _, v in pairs(Players:GetPlayers()) do
+        if v ~= p and v.Character then
+            if esp and not v.Character:FindFirstChild("V10_Highlight") then
+                local hl = Instance.new("Highlight", v.Character)
+                hl.Name = "V10_Highlight"
+                hl.FillColor = mainColor
+                hl.OutlineColor = Color3.fromRGB(255, 255, 255)
+                hl.FillTransparency = 0.25
+                hl.OutlineTransparency = 0
+            elseif not esp and v.Character:FindFirstChild("V10_Highlight") then
+                v.Character.V10_Highlight:Destroy()
+            end
+        end
+    end
+end)
+createToggle("ESP Player (V10)", function(state) esp = state end)
+
+local tracers = false
+RunService.RenderStepped:Connect(function()
+    for _, v in pairs(Players:GetPlayers()) do
+        if v ~= p and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+            local hrp = v.Character.HumanoidRootPart
+            if tracers then
+                if not hrp:FindFirstChild("V10_Tracer") then
+                    local att0 = Instance.new("Attachment", p.Character and p.Character:FindFirstChild("HumanoidRootPart") or workspace.Terrain)
+                    local att1 = Instance.new("Attachment", hrp)
+                    local beam = Instance.new("Beam", hrp)
+                    beam.Name = "V10_Tracer"
+                    beam.Attachment0 = att0
+                    beam.Attachment1 = att1
+                    beam.Color = ColorSequence.new(mainColor)
+                    beam.FaceCamera = true
+                    beam.Width0 = 0.1
+                    beam.Width1 = 0.1
+                else
+                    local beam = hrp:FindFirstChild("V10_Tracer")
+                    if p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                        beam.Attachment0.Parent = p.Character.HumanoidRootPart
+                    end
+                end
+            else
+                if hrp:FindFirstChild("V10_Tracer") then
+                    hrp.V10_Tracer.Attachment0:Destroy()
+                    hrp.V10_Tracer.Attachment1:Destroy()
+                    hrp.V10_Tracer:Destroy()
+                end
+            end
+        end
+    end
+end)
+createToggle("ESP Tracers (V10)", function(state) tracers = state end)
+
+local hitboxSize = 10
+createInput("Hitbox Size", 10, function(txt) hitboxSize = tonumber(txt) or 10 end)
+
+local hitbox = false
+RunService.Heartbeat:Connect(function()
+    for _, v in pairs(Players:GetPlayers()) do
+        if v ~= p and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+            local hrp = v.Character.HumanoidRootPart
+            if hitbox then
+                hrp.Size = Vector3.new(hitboxSize, hitboxSize, hitboxSize)
+                hrp.Transparency = 0.6
+                hrp.BrickColor = BrickColor.new("Really red")
+                hrp.CanCollide = false
+            else
+                hrp.Size = Vector3.new(2, 2, 1)
+                hrp.Transparency = 1
+                hrp.CanCollide = true
+            end
+        end
+    end
+end)
+createToggle("Hitbox Expander", function(state) hitbox = state end)
+
+local spinning = false
+local spinVelocity
+createToggle("Spinbot", function(state)
+    spinning = state
+    if spinning and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+        spinVelocity = Instance.new("BodyAngularVelocity")
+        spinVelocity.AngularVelocity = Vector3.new(0, 200, 0)
+        spinVelocity.MaxTorque = Vector3.new(0, 9e9, 0)
+        spinVelocity.P = 5000
+        spinVelocity.Parent = p.Character.HumanoidRootPart
+    else
+        if spinVelocity then spinVelocity:Destroy() end
+    end
+end)
+
+local noFog = false
+local originalFogEnd = Lighting.FogEnd
+RunService.RenderStepped:Connect(function()
+    if noFog then
+        Lighting.FogEnd = 9e9
+    else
+        Lighting.FogEnd = originalFogEnd
+    end
+end)
+createToggle("No Fog", function(state) noFog = state end)
+
+local xray = false
+createToggle("X-Ray", function(state)
+    xray = state
+    for _, v in pairs(workspace:GetDescendants()) do
+        if v:IsA("BasePart") and not v.Parent:FindFirstChild("Humanoid") and v.Name ~= "HumanoidRootPart" then
+            if xray then
+                if not v:FindFirstChild("V10_OriginalTransparency") then
+                    local numVal = Instance.new("NumberValue", v)
+                    numVal.Name = "V10_OriginalTransparency"
+                    numVal.Value = v.Transparency
+                end
+                v.Transparency = 0.75
+            else
+                if v:FindFirstChild("V10_OriginalTransparency") then
+                    v.Transparency = v.V10_OriginalTransparency.Value
+                    v.V10_OriginalTransparency:Destroy()
+                end
+            end
+        end
+    end
+end)
+
+local antiAfk = false
+p.Idled:Connect(function()
+    if antiAfk then
+        VirtualUser:Button2Down(Vector2.new(0,0), cam.CFrame)
+        task.wait(1)
+        VirtualUser:Button2Up(Vector2.new(0,0), cam.CFrame)
+    end
+end)
+createToggle("Anti-AFK", function(state) antiAfk = state end)
+
+createToggle("Auto Clicker", function(state)
+    _G.AutoClickerV10 = state
+    task.spawn(function()
+        while _G.AutoClickerV10 do
+            VirtualUser:ClickButton1(Vector2.new(0, 0))
+            task.wait(0.01)
+        end
+    end)
+end)
+
+local ctrlTp = false
+mouse.Button1Down:Connect(function()
+    if ctrlTp and UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) and mouse.Hit then
+        if p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+            p.Character.HumanoidRootPart.CFrame = mouse.Hit + Vector3.new(0, 3, 0)
+        end
+    end
+end)
+createToggle("Ctrl + Click TP", function(state) ctrlTp = state end)
+
+local bhop = false
+RunService.RenderStepped:Connect(function()
+    if bhop and p.Character and p.Character:FindFirstChild("Humanoid") then
+        if p.Character.Humanoid.FloorMaterial ~= Enum.Material.Air then
+            p.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+        end
+    end
+end)
+createToggle("Bunny Hop (Bhop)", function(state) bhop = state end)
+
+local antiVoidPart = nil
+createToggle("Anti-Void (V10)", function(state)
+    if state then
+        antiVoidPart = Instance.new("Part")
+        antiVoidPart.Size = Vector3.new(10000, 5, 10000)
+        antiVoidPart.Position = Vector3.new(0, -100, 0)
+        antiVoidPart.Transparency = 0.5
+        antiVoidPart.BrickColor = BrickColor.new("Crimson")
+        antiVoidPart.Material = Enum.Material.ForceField
+        antiVoidPart.Anchored = true
+        antiVoidPart.Parent = workspace
+    else
+        if antiVoidPart then antiVoidPart:Destroy() end
+    end
+end)
+
+local spectating = false
+createToggle("Spectate Random Player", function(state)
+    spectating = state
+    if spectating then
+        local targets = {}
+        for _, v in pairs(Players:GetPlayers()) do
+            if v ~= p and v.Character and v.Character:FindFirstChild("Humanoid") then
+                table.insert(targets, v)
+            end
+        end
+        if #targets > 0 then
+            local target = targets[math.random(1, #targets)]
+            cam.CameraSubject = target.Character.Humanoid
+        end
+    else
+        if p.Character and p.Character:FindFirstChild("Humanoid") then
+            cam.CameraSubject = p.Character.Humanoid
+        end
+    end
+end)
+
+local discoTime = false
+RunService.Heartbeat:Connect(function()
+    if discoTime then
+        Lighting.ClockTime = Lighting.ClockTime + 0.05
+    end
+end)
+createToggle("Disco Time Cycle", function(state) discoTime = state end)
+
+createButton("FPS Boost", function()
+    for _, v in pairs(workspace:GetDescendants()) do
+        if v:IsA("Texture") or v:IsA("Decal") then
+            v:Destroy()
+        elseif v:IsA("BasePart") then
+            v.Material = Enum.Material.SmoothPlastic
+        end
+    end
+    Lighting.GlobalShadows = false
+end)
+
+createButton("Teleport to Random Player", function()
+    local targets = {}
+    for _, v in pairs(Players:GetPlayers()) do
+        if v ~= p and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+            table.insert(targets, v)
+        end
+    end
+    if #targets > 0 and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+        local target = targets[math.random(1, #targets)]
+        p.Character.HumanoidRootPart.CFrame = target.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 3)
+    end
+end)
+
+createButton("Give BTools", function()
+    local tool1 = Instance.new("HopperBin", p.Backpack)
+    tool1.BinType = Enum.BinType.Clone
+    local tool2 = Instance.new("HopperBin", p.Backpack)
+    tool2.BinType = Enum.BinType.Hammer
+    local tool3 = Instance.new("HopperBin", p.Backpack)
+    tool3.BinType = Enum.BinType.Grab
+end)
+
+createToggle("Full Bright", function(state)
+    if state then 
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/MinhLuaStudio/code_hack/refs/heads/main/brightness"))() 
+    end
+end)
+
+createButton("Server Hop", function()
+    local servers = HttpService:JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/"..game.PlaceId.."/servers/Public?sortOrder=Asc&limit=100"))
+    for _, server in pairs(servers.data) do
+        if server.playing < server.maxPlayers and server.id ~= game.JobId then
+            TeleportService:TeleportToPlaceInstance(game.PlaceId, server.id, p)
+            break
+        end
+    end
+end)
+
+createButton("Rejoin Server", function()
+    TeleportService:Teleport(game.PlaceId, p)
+end)
+
+createInput("Time of Day", 12, function(txt)
+    Lighting.ClockTime = tonumber(txt) or 12
 end)
